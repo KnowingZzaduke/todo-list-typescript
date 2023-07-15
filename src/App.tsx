@@ -1,14 +1,19 @@
 import "./App.css";
-import { Task } from "../types/types";
+import { Task, idTask } from "../types/types";
 import { TaskList } from "./components/TaskList";
 import { FormCard } from "./components/FormCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App(): JSX.Element {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [validate, setValidate] = useState<boolean>(false);
   const [completed, setCompleted] = useState<boolean>(false);
   const [arrayIdTask, setArrayIdTask] = useState<string[]>([]);
+
+  useEffect(() => {
+    console.log(tasks)
+  }, [tasks])
+
   function addTask(
     e: React.FormEvent<HTMLFormElement>,
     {
@@ -37,20 +42,35 @@ function App(): JSX.Element {
   function isCompleted(name: string) {
     if (name) {
       setArrayIdTask((prevArrayIdTask) => {
-        if(!prevArrayIdTask.includes(name)){
-          return ([...prevArrayIdTask, name])
+        if (!prevArrayIdTask.includes(name)) {
+          return [...prevArrayIdTask, name];
         }
-        return prevArrayIdTask
-      })
-      console.log(arrayIdTask)
+        return prevArrayIdTask;
+      });
     }
     return setCompleted(!completed);
+  }
+
+  function deleteTask(id: idTask) {
+    if(id){
+      const filterTask = tasks.filter((task) => id !== task.id)
+      if(filterTask.length < tasks.length){
+        setTasks(filterTask);
+        console.log("se borró")
+      }
+    }
   }
   return (
     <div className="content_all-components">
       <h1>Task List</h1>
       <FormCard addTask={addTask} validate={validate} />
-      <TaskList tasks={tasks} isCompleted={isCompleted} completed={completed} arrayIdTask={arrayIdTask}/>
+      <TaskList
+        tasks={tasks}
+        isCompleted={isCompleted}
+        completed={completed}
+        arrayIdTask={arrayIdTask}
+        deleteTask={deleteTask}
+      />
     </div>
   );
 }
